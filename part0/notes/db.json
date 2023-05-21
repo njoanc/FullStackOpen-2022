@@ -17,7 +17,7 @@
     },
     {
       "content": "Learning ReactJs",
-      "important": true,
+      "important": false,
       "id": 4
     },
     {
@@ -29,11 +29,6 @@
       "content": "Learning Js",
       "important": false,
       "id": 6
-    },
-    {
-      "content": "Learning Docker",
-      "important": false,
-      "id": 7
     }
   ]
 }
