@@ -17,6 +17,10 @@ const personService = {
       throw new Error(error.response.data.error);
     }
   },
+
+  update: async (id, newPerson) => {
+    return await axios.put(`${baseUrl}/${id}`, newPerson);
+  },
 };
 
 export default personService;

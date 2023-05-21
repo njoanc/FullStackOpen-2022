@@ -17,26 +17,47 @@ const App = () => {
       setPersons(response.data);
     });
   }, []);
+
   const addPerson = (event) => {
     event.preventDefault();
 
     if (
       persons.some(
-        (person) => person.name === newName || person.phone === newPhone
+        (person) => person.name === newName && person.phone === newPhone
       )
     ) {
-      alert(`${newName} or ${newPhone} already added to the phonebook`);
+      alert(`${newName} && ${newPhone} already added to the phonebook`);
       return;
     }
-    const newPerson = {
-      name: newName,
-      phone: newPhone,
-    };
-    personService.create(newPerson).then((response) => {
-      setPersons([...persons, response.data]);
-      setNewName("");
-      setPhone("");
-    });
+
+    const existingPerson = persons.find((person) => person.name === newName);
+    if (existingPerson && existingPerson.phone !== newPhone) {
+      const confirmed = window.confirm(
+        `${existingPerson.name} is already added to the phonebook, replace the old number with a new one?`
+      );
+      if (!confirmed) {
+        return;
+      }
+      const updatedPerson = { ...existingPerson, phone: newPhone };
+      personService
+        .update(existingPerson.id, updatedPerson)
+        .then((response) => {
+          const updatedPersons = persons.map((p) =>
+            p.id !== existingPerson.id ? p : response.data
+          );
+          setPersons(updatedPersons);
+        });
+    } else {
+      const newPerson = {
+        name: newName,
+        phone: newPhone,
+      };
+      personService.create(newPerson).then((response) => {
+        setPersons([...persons, response.data]);
+        setNewName("");
+        setPhone("");
+      });
+    }
   };
 
   const handleNewPerson = (event) => {
