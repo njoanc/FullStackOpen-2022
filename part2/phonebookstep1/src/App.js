@@ -4,6 +4,7 @@ import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import Person from "./components/Person";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,6 +12,8 @@ const App = () => {
   const [newPhone, setPhone] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPersons, setFilteredPersons] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     personService.search().then((response) => {
@@ -45,6 +48,10 @@ const App = () => {
           const updatedPersons = persons.map((p) =>
             p.id !== existingPerson.id ? p : response.data
           );
+          setErrorMessage(` '${existingPerson.name}' has been updated`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
           setPersons(updatedPersons);
         });
     } else {
@@ -54,6 +61,10 @@ const App = () => {
       };
       personService.create(newPerson).then((response) => {
         setPersons([...persons, response.data]);
+        setErrorMessage(` '${newPerson.name}' has been added`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
         setNewName("");
         setPhone("");
       });
@@ -98,9 +109,17 @@ const App = () => {
     personService
       .deleteOne(person.id)
       .then(() => {
+        setErrorMessage(`${person.name} can not be found`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
         setPersons(persons.filter((p) => p.id !== person.id));
       })
       .catch((error) => {
+        setErrorMessage(` '${person.name}' has been can not be found`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
         console.log(error);
       });
   };
@@ -108,6 +127,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
       {filteredPersons.map((person) => (
         <Person key={person.id} name={person.name} phone={person.phone} />
