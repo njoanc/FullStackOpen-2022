@@ -8,6 +8,9 @@ const App = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [weather, setWeather] = useState("");
+  const [icon, setIcon] = useState("");
+  const [wind, setWind] = useState("");
 
   useEffect(() => {
     const handleSearch = async () => {
@@ -37,6 +40,26 @@ const App = () => {
     }
   }, [searchQuery]);
 
+  useEffect(() => {
+    const fetchWeather = async (capital) => {
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${process.env.REACT_APP_WEATHER_API_KEY}`
+        );
+        setWeather(response.data.main.temp);
+        setIcon(
+          `https://openweathermap.org/img/w/${response.data.weather[0].icon}.png`
+        );
+        setWind(response.data.wind.speed);
+      } catch (error) {
+        setWeather("");
+      }
+    };
+    if (selectedCountry) {
+      fetchWeather(selectedCountry.capital);
+    }
+  }, [selectedCountry]);
+
   const handleCountryButtonClick = (country) => {
     setSelectedCountry(country);
     window.scrollTo(0, 0);
@@ -59,7 +82,7 @@ const App = () => {
       {searchResults.length > 1 && (
         <div>
           {searchResults.map((country) => (
-            <div key={country.name.cca3}>
+            <div key={country.name.common}>
               <span>{country.name.common}</span>
               <Button
                 text="Show"
@@ -69,7 +92,17 @@ const App = () => {
           ))}
         </div>
       )}
-      {selectedCountry && <Country country={selectedCountry} />}
+      {selectedCountry && (
+        <div>
+          <Country country={selectedCountry} />
+          {selectedCountry.capital && (
+            <h3>Weather in {selectedCountry.capital}</h3>
+          )}
+          <p>temperature {weather} Farneit</p>
+          <img alt="current weather" src={icon} />
+          <p>wind {wind} m/s</p>
+        </div>
+      )}
     </div>
   );
 };
