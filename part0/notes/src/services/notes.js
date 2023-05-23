@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:3002/notes";
+const baseUrl = "http://localhost:3002/api/notes";
 
 const noteService = {
   getAll: async () => {
@@ -8,7 +8,7 @@ const noteService = {
   },
 
   create: async (newObject) => {
-    return await axios.post(baseUrl, newObject);
+    return await axios.post(`${baseUrl}/create`, newObject);
   },
 
   update: async (id, newObject) => {
