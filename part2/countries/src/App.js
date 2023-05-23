@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Country from "./components/Country";
+import Button from "./components/Button";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     const handleSearch = async () => {
@@ -35,6 +37,11 @@ const App = () => {
     }
   }, [searchQuery]);
 
+  const handleCountryButtonClick = (country) => {
+    setSelectedCountry(country);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div>
       <form>
@@ -48,14 +55,21 @@ const App = () => {
       </form>
 
       {errorMessage && <p>{errorMessage}</p>}
-
-      {searchResults.length === 1 && (
+      {searchResults.length === 1 && <Country country={searchResults[0]} />}
+      {searchResults.length > 1 && (
         <div>
           {searchResults.map((country) => (
-            <Country key={country.name.common} country={searchResults[0]} />
+            <div key={country.name.cca3}>
+              <span>{country.name.common}</span>
+              <Button
+                text="Show"
+                handleShow={() => handleCountryButtonClick(country)}
+              />
+            </div>
           ))}
         </div>
       )}
+      {selectedCountry && <Country country={selectedCountry} />}
     </div>
   );
 };

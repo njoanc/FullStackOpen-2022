@@ -1,5 +1,5 @@
 import Languages from "./Languages";
-const Country = ({ country }) => {
+const Country = ({ country, text, handleClick }) => {
   return (
     <div>
       <h2>{country.name.official}</h2>
